@@ -1,0 +1,50 @@
+<div class="py-5">
+    <h2>Iniciar Sesión</h2>
+    <hr class="w-50" />
+
+    <form id="formulario-login">
+        <div class="form-group">
+            <div class="form-group">
+                <label>Email</label>
+                <input class="form-control w-50 m-auto" name="email" />
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input class="form-control w-50 m-auto" name="password" />
+            </div>
+        </div>
+        <button type="submit" class="btn btn-success mb-3">Ingresar</button>
+        <p>¿Aún no tienes cuenta? <a href="/registro">Regístrate</a></p>
+    </form>
+</div>
+
+<script>
+    console.log("conectado al login")
+
+    const login = document.querySelector("#formulario-login");
+    login.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const { email, password } = e.target;
+        console.log(email.value, password.value);
+
+        const response = await fetch("/login", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email: email.value,
+                password: password.value
+            }),
+        })
+        const unauthorizedStatus = [400, 404, 500]
+        if (unauthorizedStatus.includes(response.status)) {
+            alert("Usuario o contraseña incorrectos")
+            return;
+        }
+        const data = await response.json();
+        sessionStorage.setItem('token', data.message)
+        window.location = `/datos?token=${sessionStorage.getItem('token')}`
+    })
+
+</script>
